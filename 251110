@@ -1,50 +1,61 @@
-Ok ben ik weer. Ik wil e.e.a aanpassen op het javascript van het hybridemodel. 
-1)Mobiliteit en opleidingskosten moeten eruit
-2)Werkgeverslasten per 01-01-2026: 39% tot max sal. €79.412 (was voorheen 33%)
-3) vanaf 130 eruo per uur wordt de bijdrage kantoorkosten gemaximaliseerd op 61.276
-
-Hier is het oude javascript: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Salaris Calculator - Hybride Model</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salaris Calculator - Hybride Model (2026)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      padding: 20px;
     }
     .calculator {
       max-width: 600px;
-      width: 90%;
+      width: 100%;
       padding: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       border-radius: 8px;
       background-color: #fff;
     }
-    h1 { font-size: 18pt; text-align: center; }
-    label { display: block; margin: 10px 0 5px; }
-
-    /* Standaardiseer breedte voor alle invoervelden */
+    h1 {
+      font-size: 18pt;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
     input, select {
       width: 100%;
-      max-width: 100%;
       padding: 10px;
       margin-bottom: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 16px;
     }
-
-    button { width: 100%; padding: 12px; background-color: #ff7872; color: #fff; border: none; border-radius: 20px; font-size: 16px; cursor: pointer; }
-    button:hover { background-color: #83bec4; }
-    .result { margin-top: 20px; text-align: left; font-size: 16px; }
-    .total-line { font-weight: bold; }
-    
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff7872;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #83bec4;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 16px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -55,8 +66,8 @@ Hier is het oude javascript: <!DOCTYPE html>
       border-bottom: 1px solid #ddd;
     }
     .label-column {
-      text-align: left;
       font-weight: bold;
+      text-align: left;
     }
     .value-column {
       text-align: right;
@@ -64,10 +75,9 @@ Hier is het oude javascript: <!DOCTYPE html>
   </style>
 </head>
 <body>
-
   <div class="calculator">
-    <h1>Salaris Calculator - Hybride Model</h1>
-    
+    <h1>Salaris Calculator - Hybride Model (2026)</h1>
+
     <label for="urenweek">Uren per week:</label>
     <select id="urenweek">
       <option value="32">32</option>
@@ -78,21 +88,7 @@ Hier is het oude javascript: <!DOCTYPE html>
     <label for="tarief">Uurtarief (€):</label>
     <input type="number" id="tarief" placeholder="Bijv. 120">
 
-    <label for="mobiliteit">Mobiliteitsoptie:</label>
-    <select id="mobiliteit">
-      <option value="0">Geen mobiliteit</option>
-      <option value="491.20">NS Business Card (€ 491,20 per maand)</option>
-      <option value="1000">Leaseauto (€ 1.000 per maand)</option>
-    </select>
-
-    <label for="opleiding">Opleidingskosten (€):</label>
-    <select id="opleiding">
-      <option value="0">Geen opleidingskosten</option>
-      <option value="2500">Opleidingskosten (€ 2.500 per jaar)</option>
-    </select>
-
     <button onclick="calculateSalary()">Bereken Salaris</button>
-
     <div class="result" id="result"></div>
   </div>
 
@@ -102,35 +98,35 @@ Hier is het oude javascript: <!DOCTYPE html>
     }
 
     function calculateSalary() {
-      const fullTimeSalaryPerMonth = 3824; // Basissalaris bij 40 uur per week
+      const fullTimeSalaryPerMonth = 3824; // bij 40 uur per week
       const vakantiegeldPercentage = 0.08;
       const kantoorKostenPercentage = 0.3;
-      const werkgeverslastenPercentage = 0.33;
+      const werkgeverslastenPercentage = 0.39;
+      const werkgeverslastenPlafond = 79412;
+      const kantoorKostenMax = 61276;
 
       const urenPerWeek = parseFloat(document.getElementById("urenweek").value);
       const uurtarief = parseFloat(document.getElementById("tarief").value) || 0;
-      const mobiliteitPerMaand = parseFloat(document.getElementById("mobiliteit").value) || 0;
-      const opleidingKosten = parseFloat(document.getElementById("opleiding").value) || 0;
 
-      // Basissalaris aangepast aan het aantal uren per week
       const vastSalarisPerMaand = (urenPerWeek / 40) * fullTimeSalaryPerMonth;
       const vastSalarisPerJaar = vastSalarisPerMaand * 12;
-
-      // Vakantiegeld berekend als 8% van het vaste jaarsalaris
       const vakantiegeld = vastSalarisPerJaar * vakantiegeldPercentage;
+
       const jaaruren = (urenPerWeek / 40) * 1600;
       const jaaromzet = jaaruren * uurtarief;
 
-      const mobiliteitKostenPerJaar = mobiliteitPerMaand * 12;
-      const kantoorKosten = jaaromzet * kantoorKostenPercentage;
+      let kantoorKosten = jaaromzet * kantoorKostenPercentage;
+      if (uurtarief >= 130 && kantoorKosten > kantoorKostenMax) {
+        kantoorKosten = kantoorKostenMax;
+      }
 
-      const totaleVasteKosten = vastSalarisPerJaar + vakantiegeld + mobiliteitKostenPerJaar + opleidingKosten + kantoorKosten;
-
+      const totaleVasteKosten = vastSalarisPerJaar + vakantiegeld + kantoorKosten;
       const brutoVariabelSalarisPerJaar = jaaromzet - totaleVasteKosten;
-      const belastbaarSalaris = vastSalarisPerJaar + brutoVariabelSalarisPerJaar;
-      const werkgeverslasten = Math.min(belastbaarSalaris, 75860) * werkgeverslastenPercentage;
 
+      const belastbaarSalaris = vastSalarisPerJaar + brutoVariabelSalarisPerJaar;
+      const werkgeverslasten = Math.min(belastbaarSalaris, werkgeverslastenPlafond) * werkgeverslastenPercentage;
       const nettoVariabelSalarisPerJaar = brutoVariabelSalarisPerJaar - werkgeverslasten;
+
       const brutoJaarsalaris = vastSalarisPerJaar + vakantiegeld + nettoVariabelSalarisPerJaar;
       const brutoSalarisPerMaand = vastSalarisPerMaand + (nettoVariabelSalarisPerJaar / 12);
       const maandelijksVoorschot = vastSalarisPerMaand + ((nettoVariabelSalarisPerJaar / 12) * 0.85);
@@ -148,9 +144,11 @@ Hier is het oude javascript: <!DOCTYPE html>
           <tr>
             <td class="label-column">Maandelijks voorschot (100% vast + 85% variabel):</td>
             <td class="value-column">€${formatCurrency(maandelijksVoorschot)}</td>
+          </tr>
         </table>
       `;
     }
   </script>
 </body>
 </html>
+
