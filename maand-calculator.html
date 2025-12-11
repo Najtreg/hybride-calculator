@@ -2,85 +2,139 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8" />
-<title>Hybride Model Calculator – Compact (All-in variabel salaris)</title>
+<title>Hybride Model Calculator – Compact</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; max-width: 900px; }
-  label { font-weight: bold; margin-top: 10px; display: block; }
-  select, input { padding: 6px; margin-top: 5px; width: 250px; }
-  .result { background: #f5faff; padding: 15px; border: 1px solid #bcd; border-radius: 6px; margin-top: 20px; }
-  .row { display: flex; justify-content: space-between; margin: 4px 0; }
+  body { font-family: Arial, sans-serif; margin: 20px; max-width: 1100px; }
+  h1 { margin-bottom: 15px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 40px;
+    margin-bottom: 25px;
+  }
+
+  label { font-weight: bold; display: block; margin-bottom: 4px; }
+  select, input {
+    padding: 6px; width: 100%; font-size: 14px;
+    border: 1px solid #ccc; border-radius: 4px;
+  }
+
+  .result {
+    margin-top: 25px; padding: 18px;
+    border: 1px solid #bcd; border-radius: 6px;
+    background: #f5faff;
+  }
+
+  .row {
+    display: flex; justify-content: space-between;
+    margin: 6px 0; font-size: 15px;
+  }
+
   .value { font-weight: bold; }
-  .note { font-size: 13px; color: #555; margin-top: 6px; }
+
+  .vakblock {
+    margin-top: 12px; font-size: 13px; color: #444;
+    padding-top: 10px; border-top: 1px solid #ccc;
+  }
 </style>
 </head>
 <body>
 
 <h1>Hybride Model Calculator</h1>
-<p>Kies hieronder de variabele kosten en zie direct jouw berekende hybride beloning.</p>
 
-<label>Uurtarief</label>
-<select id="rate">
-  <option>100</option>
-  <option>110</option>
-  <option>115</option>
-  <option>120</option>
-  <option>125</option>
-  <option>130</option>
-  <option>135</option>
-  <option>140</option>
-  <option>175</option>
-</select>
+<div class="grid">
+  <div>
+    <label>Uurtarief</label>
+    <select id="rate">
+      <option value="100">100</option>
+      <option value="110">110</option>
+      <option value="115">115</option>
+      <option value="120">120</option>
+      <option value="125">125</option>
+      <option value="130">130</option>
+      <option value="135">135</option>
+      <option value="140">140</option>
+      <option value="175">175</option>
+    </select>
+  </div>
 
-<label>Uren per maand</label>
-<input id="hours" type="number" value="133" />
+  <div>
+    <label>Uren per maand</label>
+    <input id="hours" type="number" value="133">
+  </div>
 
-<label>Vast salaris per maand</label>
-<input id="fixed" type="number" value="3824" />
+  <div>
+    <label>Opleidingsbudget p/mnd</label>
+    <select id="training">
+      <option value="0">0</option>
+      <option value="-50">-50</option>
+      <option value="-100">-100</option>
+      <option value="-150">-150</option>
+      <option value="-200">-200</option>
+    </select>
+  </div>
 
-<label>Opleidingsbudget p/mnd</label>
-<select id="training">
-  <option value="0">€0</option>
-  <option value="-50">-€50</option>
-  <option value="-100">-€100</option>
-  <option value="-150">-€150</option>
-  <option value="-200">-€200</option>
-</select>
+  <div>
+    <label>Leaseauto kosten p/mnd (excl. laden)</label>
+    <select id="lease">
+      <option value="0">0</option>
+      <option value="-725">-725</option>
+      <option value="-775">-775</option>
+      <option value="-925">-925</option>
+    </select>
+  </div>
 
-<label>Leaseauto kosten p/mnd (excl laden)</label>
-<select id="lease">
-  <option value="0">€0</option>
-  <option value="-725">-€725</option>
-  <option value="-775">-€775</option>
-  <option value="-925">-€925</option>
-</select>
+  <div>
+    <label>Laadkosten p/mnd</label>
+    <select id="charging">
+      <option value="0">0</option>
+      <option value="-100">-100</option>
+      <option value="-150">-150</option>
+      <option value="-250">-250</option>
+    </select>
+  </div>
 
-<label>Laadkosten p/mnd</label>
-<select id="charging">
-  <option value="0">€0</option>
-  <option value="-100">-€100</option>
-  <option value="-150">-€150</option>
-  <option value="-250">-€250</option>
-</select>
+  <div>
+    <label>Telefoonkosten p/mnd</label>
+    <select id="phone">
+      <option value="0">0</option>
+      <option value="-15">-15</option>
+      <option value="-30">-30</option>
+    </select>
+  </div>
+</div>
 
-<label>Telefoonkosten p/mnd</label>
-<select id="phone">
-  <option value="0">€0</option>
-  <option value="-15">-€15</option>
-  <option value="-30">-€30</option>
-</select>
+<!-- Vast salaris: onzichtbaar invoerveld -->
+<input id="fixed" type="number" value="3824" style="display:none">
 
 <div class="result">
-  <div class="row"><span>Omzet per maand:</span> <span class="value" id="revMonth"></span></div>
-  <div class="row"><span>Kantoorkosten per maand:</span> <span class="value" id="officeMonth"></span></div>
-  <div class="row"><span>Werkgeverslasten per maand:</span> <span class="value" id="wglMonth"></span></div>
-  <div class="row"><span>Variabel salaris (incl. 8% vakantiegeld):</span> <span class="value" id="varBonus"></span></div>
-  <div class="row"><strong>Totaal bruto per maand (vast + variabel)</strong> <span class="value" id="totalGross"></span></div>
 
-  
+  <div class="row"><span>Omzet per maand:</span> <span id="revMonth" class="value"></span></div>
+  <div class="row"><span>Kantoorkosten per maand:</span> <span id="officeMonth" class="value"></span></div>
+  <div class="row"><span>Werkgeverslasten per maand:</span> <span id="wglMonth" class="value"></span></div>
+
+  <hr>
+
+  <div class="row"><span>Vast basissalaris:</span> <span id="fixedOut" class="value"></span></div>
+  <div class="row"><span>Variabel salaris (incl. 8% vakantiegeld):</span> <span id="varBonus" class="value"></span></div>
+
+  <div class="row"><strong>Totaal bruto per maand (vast + variabel)</strong>
+    <span id="totalGross" class="value"></span>
+  </div>
+
+  <div class="vakblock">
+    Vakantiegeldreservering (8% over vast salaris):  
+    <span id="vakRes" class="value"></span><br>
+    <em>Wordt jaarlijks uitbetaald in mei.</em>
+  </div>
+
 </div>
 
 <script>
-function fmt(x) { return x.toLocaleString("nl-NL", { style: "currency", currency: "EUR" }); }
+function fmt(x) {
+  return x.toLocaleString("nl-NL", { style: "currency", currency: "EUR" });
+}
 
 function calc() {
   let rate = Number(document.getElementById("rate").value);
@@ -95,11 +149,11 @@ function calc() {
   let revenue = rate * hours;
   let revenueYear = revenue * 12;
 
-  // Kantoorkosten met cap
+  // Kantoorkosten
   let officeYear = Math.min(0.30 * revenueYear, 61276);
   let officeMonth = officeYear / 12;
 
-  // Werkgeverslasten (hybride model)
+  // Werkgeverslasten
   const WGL_RATE = 0.39;
   const WGL_CAP = 79412;
 
@@ -128,24 +182,30 @@ function calc() {
     }
   }
 
-  // Variabele kosten toepassen (allemaal al all-in, geen vakantiegeldverhoging)
-  let extraCosts = train + lease + charge + phone;
-  variable += extraCosts;
+  // Variabele kosten toepassen (negatief)
+  variable += train + lease + charge + phone;
+
+  // Vakantiegeld over vast salaris
+  let vakRes = Fs * 0.08;
 
   let totalGross = Fs + variable;
 
+  // OUTPUT
   document.getElementById("revMonth").textContent = fmt(revenue);
   document.getElementById("officeMonth").textContent = fmt(officeMonth);
   document.getElementById("wglMonth").textContent = fmt(wglMonth);
+  document.getElementById("fixedOut").textContent = fmt(Fs);
   document.getElementById("varBonus").textContent = fmt(variable);
   document.getElementById("totalGross").textContent = fmt(totalGross);
+  document.getElementById("vakRes").textContent = fmt(vakRes);
 }
 
-document.querySelectorAll("select, input").forEach(el => el.addEventListener("input", calc));
+document.querySelectorAll("select, input[type=number]").forEach(el =>
+  el.addEventListener("input", calc)
+);
+
 calc();
 </script>
 
 </body>
 </html>
-
-
