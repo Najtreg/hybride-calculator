@@ -1,140 +1,3 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Salaris Calculator - Hybride Model</title>
-
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #f0f0f0;
-  }
-  .calculator {
-    max-width: 600px;
-    width: 90%;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    background-color: #fff;
-  }
-  h1 { font-size: 18pt; text-align: center; }
-  label { display: block; margin: 10px 0 5px; }
-
-  input, select {
-    width: 100%;
-    max-width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    background-color: #ff7872;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  button:hover { background-color: #83bec4; }
-
-  .result { margin-top: 20px; font-size: 16px; }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  td {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .label-column { font-weight: bold; }
-  .value-column { text-align: right; font-weight: bold; }
-
-  .vak {
-    margin-top: 12px;
-    font-size: 14px;
-    color: #333;
-    padding-top: 10px;
-    border-top: 1px solid #ccc;
-  }
-</style>
-</head>
-
-<body>
-<div class="calculator">
-
-<h1>Salaris Calculator - Hybride Model</h1>
-
-<!-- Inputvelden -->
-<label>Uren per maand:</label>
-<input type="number" id="urenPM" value="133">
-
-<label>Uurtarief:</label>
-<select id="tarief">
-  <option value="100">€ 100,-</option>
-  <option value="110">€ 110,-</option>
-  <option value="115">€ 115,-</option>
-  <option value="120">€ 120,-</option>
-  <option value="125">€ 125,-</option>
-  <option value="130">€ 130,-</option>
-  <option value="135">€ 135,-</option>
-  <option value="140">€ 140,-</option>
-  <option value="175">€ 175,-</option>
-</select>
-
-<label>Opleidingsbudget p/mnd:</label>
-<select id="opleiding">
-  <option value="0">€ 0,-</option>
-  <option value="-50">€ 50,-</option>
-  <option value="-100">€ 100,-</option>
-  <option value="-150">€ 150,-</option>
-  <option value="-200">€ 200,-</option>
-</select>
-
-<label>Leaseauto p/mnd (excl. laden):</label>
-<select id="lease">
-  <option value="0">€ 0,-</option>
-  <option value="-725">€ 725,-</option>
-  <option value="-775">€ 775,-</option>
-  <option value="-925">€ 925,-</option>
-</select>
-
-<label>Laadkosten p/mnd:</label>
-<select id="laad">
-  <option value="0">€ 0,-</option>
-  <option value="-100">€ 100,-</option>
-  <option value="-150">€ 150,-</option>
-  <option value="-250">€ 250,-</option>
-</select>
-
-<label>Telefoonkosten p/mnd:</label>
-<select id="telefoon">
-  <option value="0">€ 0,-</option>
-  <option value="-15">€ 15,-</option>
-  <option value="-30">€ 30,-</option>
-</select>
-
-<!-- Vast salaris verborgen -->
-<input type="hidden" id="vast" value="4015">
-
-<button onclick="calc()">Bereken Salaris</button>
-
-<div id="result" class="result"></div>
-
-</div>
-
 <script>
 function fmt(n) {
   return n.toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -142,86 +5,71 @@ function fmt(n) {
 
 function calc() {
 
-  let urenPM = Number(document.getElementById("urenPM").value);
-  let tarief = Number(document.getElementById("tarief").value);
-  let opleiding = Number(document.getElementById("opleiding").value);
-  let lease = Number(document.getElementById("lease").value);
-  let laad = Number(document.getElementById("laad").value);
-  let telefoon = Number(document.getElementById("telefoon").value);
-  let vast = Number(document.getElementById("vast").value);
+  let urenPM   = Number(document.getElementById("urenPM").value);
+  let tarief   = Number(document.getElementById("tarief").value);
+  let opleiding= Number(document.getElementById("opleiding").value); // negatief = kosten
+  let lease    = Number(document.getElementById("lease").value);     // negatief = kosten
+  let laad     = Number(document.getElementById("laad").value);      // negatief = kosten
+  let telefoon = Number(document.getElementById("telefoon").value);  // negatief = kosten
+  let vast     = Number(document.getElementById("vast").value);
 
   // Omzet
   let omzetPM = urenPM * tarief;
   let omzetPJ = omzetPM * 12;
 
-  // Kantoorkosten (cap 61.276)
+  // Kantoorkosten: altijd 30% van jaaromzet, met absoluut maximum 61.276
   let kantoorPJ = Math.min(0.30 * omzetPJ, 61276);
   let kantoorPM = kantoorPJ / 12;
 
-  // WGL berekening
+  // Werkgeverslasten (WGL)
   const WGL_RATE = 0.39;
-  const WGL_CAP = 79409;
+  const WGL_CAP  = 79412; // (pas dit aan als jullie echt 79.409 willen hanteren)
 
-  let A = kantoorPM;
-  let R = omzetPM;
-  let Fs = vast;
+  // Overige maandelijkse kosten (opleiding/lease/laad/telefoon zijn negatief ingevuld)
+  // Deze zijn kosten, dus moeten de ruimte voor salaris verlagen vóór de WGL/variabel berekening.
+  const overigeKostenPM = -(opleiding + lease + laad + telefoon); // positief bedrag als er kosten zijn
 
-  let v1 = (R - Fs - A - WGL_RATE * Fs) / (1 + WGL_RATE);
-  let variabel;
-  let wglPM;
+  // Netto "ruimte" per maand na kosten (omzet minus kantoorkosten minus overige kosten)
+  const R = omzetPM - kantoorPM - overigeKostenPM;
 
-  if (v1 < 0) {
+  const Fs = vast;
+
+  // Variabel oplossen onder de aanname: R = Fs + variabel + WGL_RATE*(Fs+variabel)
+  // => variabel = (R - Fs*(1+WGL_RATE)) / (1+WGL_RATE)
+  let variabel = 0;
+  let wglPM = 0;
+
+  let v1 = (R - Fs * (1 + WGL_RATE)) / (1 + WGL_RATE);
+
+  if (v1 <= 0) {
     variabel = 0;
+    // WGL over salaris (max tot cap)
     wglPM = WGL_RATE * Math.min(WGL_CAP / 12, Fs);
   } else {
     let jaarink = 12 * (Fs + v1);
+
     if (jaarink <= WGL_CAP) {
       variabel = v1;
       wglPM = WGL_RATE * (Fs + v1);
     } else {
+      // Cap bereikt: WGL is maximaal per maand
       let wglCapPM = (WGL_CAP / 12) * WGL_RATE;
-      variabel = R - Fs - A - wglCapPM;
+
+      variabel = R - Fs - wglCapPM;
       if (variabel < 0) variabel = 0;
+
       wglPM = wglCapPM;
     }
   }
 
-  // variabele kosten
-  variabel += opleiding + lease + laad + telefoon;
-
-  // vakantiegeld
+  // Vakantiegeldreservering (zoals jij 'm had: 8% alleen over vast)
   let vakRes = Fs * 0.08;
 
-  // totaal
+  // Totaal bruto per maand (vast + variabel)
   let totaalPM = Fs + variabel;
 
   document.getElementById("result").innerHTML = `
     <table>
       <tr><td class="label-column">Omzet per maand:</td><td class="value-column">€ ${fmt(omzetPM)}</td></tr>
       <tr><td class="label-column">Kantoorkosten per maand:</td><td class="value-column">€ ${fmt(kantoorPM)}</td></tr>
-      <tr><td class="label-column">Werkgeverslasten per maand:</td><td class="value-column">€ ${fmt(wglPM)}</td></tr>
-      <tr><td class="label-column">Vast salaris:</td><td class="value-column">€ ${fmt(Fs)}</td></tr>
-      <tr><td class="label-column">Variabel salaris (incl. 8% vakantiegeld):</td><td class="value-column">€ ${fmt(variabel)}</td></tr>
-      <tr><td class="label-column total-line">Totaal bruto per maand:</td>
-          <td class="value-column total-line">€ ${fmt(totaalPM)}</td></tr>
-    </table>
-
-    <div class="vak">
-      Vakantiegeldreservering (8% over vast salaris): <strong>€ ${fmt(vakRes)}</strong>
-      <em>Wordt jaarlijks uitbetaald in mei.</em><br>
-      <em>Aan de inhoud van deze rekenmodule kunnen geen rechten worden ontleend. Wijzigingen en typefouten onder voorbehoud</em>
-    </div>
-  `;
-}
-</script>
-
-</body>
-</html>
-
-
-
-
-
-
-
-
+      <tr><td class="label-column">Overige kosten per maand (lease/opl./laad/tel.):</td><td class="value-column">€ ${fmt(overigeKostenPM)}</td></tr>
