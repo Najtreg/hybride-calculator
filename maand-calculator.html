@@ -150,8 +150,13 @@ function calc() {
   let revenueYear = revenue * 12;
 
   // Kantoorkosten
-  let officeYear = Math.min(0.30 * revenueYear, 61276);
-  let officeMonth = officeYear / 12;
+  let officeYear;
+
+if (rate >= 130) {
+  officeYear = Math.min(0.30 * revenueYear, 61276);
+} else {
+  officeYear = 0.30 * revenueYear;
+}
 
   // Werkgeverslasten
   const WGL_RATE = 0.39;
