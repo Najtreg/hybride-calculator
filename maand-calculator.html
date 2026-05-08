@@ -155,7 +155,7 @@ function calc() {
 
   // Werkgeverslasten
   const WGL_RATE = 0.39;
-  const WGL_CAP = 79409;
+  const WGL_CAP = rate >= 130 ? 79409 : Infinity;
 
   let A = officeMonth;
   let R = revenue;
